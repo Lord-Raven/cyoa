@@ -10,6 +10,16 @@ type InitStateType = any;
 
 type ChatStateType = any;
 
+/* Stage names: 
+    Choke Your Own Adulterer. 
+    Cheese Your Own Advantage. 
+    Charter Your Own Airship. 
+    Chug Your Own Ale. 
+    Chase Your Own Antelope. 
+    Charge Your Own Android. 
+    Chant Your Own Anthem. 
+    Change Your Own Attitude.*/
+
 
 export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateType, ConfigType> {
     
@@ -72,17 +82,18 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let errorMessage: string|null = null;
         let finalContent: string|undefined = content;
 
-        // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options.
-        const match = content.match(/^\s*(\d+)\s*$/);
+        // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
+        const match = content.match(/^\s*(\d+)/gm);
         if (match) {
+            // 
             const choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
-                finalContent = this.choices[choiceIndex];
+                finalContent = `(${choiceIndex + 1}. ${this.choices[choiceIndex]})`;
             }
             // Alternatively, they may have repeated some snipped of content from one of the options:
             for (let i = 0; i < this.choices.length; i++) {
                 if (content.toLowerCase().includes(this.choices[i].toLowerCase()) || this.choices[i].toLowerCase().includes(content.toLowerCase())) {
-                    finalContent = this.choices[i];
+                    finalContent = `(${i + 1}. ${this.choices[i]})`;
                     break;
                 }
             }
@@ -108,7 +119,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
         const targetUser = (promptForId ? this.users[promptForId] : Object.values(this.users)[0]);
         // Generate options:
-        let optionPrompt = this.replaceTags(`Details about {{char}}:\n${this.characters[anonymizedId].description} ${this.characters[anonymizedId].personality}\n\nDetails about {{user}}:\n${targetUser.chatProfile}\n\nChat History:\n{{messages}}\n\nDefault Instruction:\n{{post_history_instructions}}\n\n${this.actionPrompt}`,
+        let optionPrompt = this.replaceTags(`Details about {{char}}:\n${this.characters[anonymizedId].personality}\n${this.characters[anonymizedId].description}\n\nDetails about {{user}}:\n${targetUser.chatProfile}\n\nChat History:\n{{messages}}\n\nDefault Instruction:\n{{post_history_instructions}}\n\n${this.actionPrompt}`,
             {"user": targetUser.name, "char": this.characters[anonymizedId].name, "original": ''});
         let optionResponse = await this.generator.textGen({
             prompt: optionPrompt,
@@ -159,7 +170,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
     replaceTags(source: string, replacements: {[name: string]: string}) {
         return source.replace(/{{([A-z]*)}}/g, (match) => {
-            return replacements[match.substring(2, match.length - 2)];
+            return replacements[match.substring(2, match.length - 2)] || match;
         });
     }
 
