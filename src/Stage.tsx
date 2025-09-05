@@ -18,7 +18,8 @@ type ChatStateType = any;
     Chase Your Own Antelope. 
     Charge Your Own Android. 
     Chant Your Own Anthem. 
-    Change Your Own Attitude.*/
+    Change Your Own Attitude.
+    Chew Your Own Avocado.*/
 
 
 export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateType, ConfigType> {
@@ -100,7 +101,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         }
 
         return {
-            stageDirections: `Critical Instruction: {{user}} has selected the following action: ${finalContent}. Depict {{user}}'s actions and outcome as the narrative continues.`,
+            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action: ${finalContent}. Depict {{user}}'s actions, including any dialogue and consequences as the narrative continues.`,
             messageState: this.buildMessageState(),
             modifiedMessage: finalContent,
             systemMessage: null,
@@ -153,7 +154,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             messageState: this.buildMessageState(),
             modifiedMessage: null,
             error: this.choices.length == 0 ? 'Failed to generate actions; consider swiping or write your own.' : null,
-            systemMessage: this.choices.length > 0 ? `---\nChoose an action:\n` + this.choices.map((action, index) => `${index + 1}. ${action}`).join('\n') : null,
+            systemMessage: this.choices.length > 0 ? `---\nWhat do you do?\n` + this.choices.map((action, index) => `${index + 1}. ${action}`).join('\n') : null,
             chatState: null
         };
     }
