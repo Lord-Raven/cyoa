@@ -86,7 +86,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
         const match = content.match(/^\s*(\d+)/gm);
         if (match) {
-            // 
+            console.log(`Matched number: ${match[1]}`);
             const choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
                 finalContent = `(${choiceIndex + 1}. ${this.choices[choiceIndex]})`;
