@@ -93,10 +93,10 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
                 finalContent = this.choices[choiceIndex];
             }
         }
-        
+
         // Alternatively, they may have repeated some snipped of content from one of the options:
         for (let i = 0; i < this.choices.length; i++) {
-            if (content.toLowerCase().includes(this.choices[i].toLowerCase()) || this.choices[i].toLowerCase().includes(content.toLowerCase())) {
+            if (content.trim().toLowerCase().includes(this.choices[i].trim().toLowerCase()) || this.choices[i].trim().toLowerCase().includes(content.trim().toLowerCase())) {
                 choiceIndex = i;
                 finalContent = this.choices[i];
                 break;
