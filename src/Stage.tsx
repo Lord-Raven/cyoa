@@ -113,10 +113,16 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     async afterResponse(botMessage: Message): Promise<Partial<StageResponse<ChatStateType, MessageStateType>>> {
         const {
             anonymizedId,
-            promptForId
+            promptForId,
         } = botMessage;
 
-        console.log(botMessage);
+        let finalContent = botMessage.content || '';
+
+        // Cut off the content if encountering # or --- or "What do you do?"
+        const cutoffMatch = finalContent.match(/(---|#|What do you do\?)/);
+        if (cutoffMatch) {
+            finalContent = finalContent.substring(0, cutoffMatch.index).trim();
+        }
 
         const targetUser = (promptForId ? this.users[promptForId] : Object.values(this.users)[0]);
         // Generate options:
@@ -148,11 +154,10 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         // Trim down options:
         this.choices.length = Math.min(this.choices.length, 6);
 
-
         return {
             stageDirections: null,
             messageState: this.buildMessageState(),
-            modifiedMessage: null,
+            modifiedMessage: finalContent,
             error: this.choices.length == 0 ? 'Failed to generate actions; consider swiping or write your own.' : null,
             systemMessage: this.choices.length > 0 ? `---\nWhat do you do?\n` + this.choices.map((action, index) => `${index + 1}. ${action}`).join('\n') : null,
             chatState: null
