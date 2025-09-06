@@ -7,11 +7,11 @@ project_name: "CYOA"
 # A short tagline to show in search.
 tagline: "A true paperback classic: Chew Your Own Avocado."
 
-creator_notes: >
+creator_notes: |
   This stage is inspired by those old "Cheese Your Own Advantage" books. You know the ones. 
-
+  
   After each response, the stage generates some options for you, and you can enter a number to choose one or ignore them entirely. 
-  Either way, the LLM is instructed to narrate the details and outcome of your choice.
+  Either way, the LLM is instructed to narrate the details and outcome of your choice. 
   
   There's not much to this one; you can just drop it into any old chat to forfeit agency or abandon responsibility for your own bad writing. Have fun!
 

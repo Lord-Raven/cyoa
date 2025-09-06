@@ -27,9 +27,10 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     readonly defaultStat: number = 0;
     readonly actionPrompt: string = 
         'Critical Instruction:\nThis is a multiple-choice turn-based role-play. Based on the above chat history, output a list of three-to-six options for varied follow-up actions that {{user}} could choose to pursue at this juncture.\n' +
-        'These options can be simple dialogue, immediate reactions, or general courses of action. Consider the characters\' current situations, motivations, and assets while crafting interesting actions.\n' +
+        'These options can be simple dialogue, immediate reactions, or general courses of action. Consider the characters\' current situations, motivations, and assets while crafting interesting actions that could ' +
+        'drive the narrative in different directions.\n' +
         'All options follow this format:\n' +
-        '#. Brief summary of action or dialogue\n\n' +
+        '- Brief summary of action or dialogue\n\n' +
         'Sample Situation: {{user}} is confronted by a locked door with an inattentive guard nearby.' +
         'Sample Response:\n' +
         '- "How would you feel about letting me in?".\n' +
@@ -81,29 +82,31 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         } = userMessage;
 
         let errorMessage: string|null = null;
+        let choiceIndex: number|null = null;
         let finalContent: string|undefined = content;
 
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
         const match = content.match(/^\s*(\d+)/m);
         if (match) {
-            console.log(`Matched number: ${match}`);
-            const choiceIndex = parseInt(match[1], 10) - 1;
+            choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
-                finalContent = `(${choiceIndex + 1}. ${this.choices[choiceIndex]})`;
+                finalContent = this.choices[choiceIndex];
             }
-            // Alternatively, they may have repeated some snipped of content from one of the options:
-            for (let i = 0; i < this.choices.length; i++) {
-                if (content.toLowerCase().includes(this.choices[i].toLowerCase()) || this.choices[i].toLowerCase().includes(content.toLowerCase())) {
-                    finalContent = `(${i + 1}. ${this.choices[i]})`;
-                    break;
-                }
+        }
+        
+        // Alternatively, they may have repeated some snipped of content from one of the options:
+        for (let i = 0; i < this.choices.length; i++) {
+            if (content.toLowerCase().includes(this.choices[i].toLowerCase()) || this.choices[i].toLowerCase().includes(content.toLowerCase())) {
+                choiceIndex = i;
+                finalContent = this.choices[i];
+                break;
             }
         }
 
         return {
             stageDirections: `Critical Instruction: {{user}} will pursue the following course of action: ${finalContent}. Depict {{user}}'s actions, including any dialogue and consequences as the narrative continues.`,
             messageState: this.buildMessageState(),
-            modifiedMessage: finalContent,
+            modifiedMessage: choiceIndex ? `(${choiceIndex + 1}. ${finalContent})` : finalContent,
             systemMessage: null,
             error: errorMessage,
             chatState: null,
