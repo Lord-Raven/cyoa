@@ -30,15 +30,15 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         'These options can be simple dialogue, immediate reactions, or general courses of action. Consider the characters\' current situations, motivations, and assets while crafting interesting actions that could ' +
         'drive the narrative in different directions.\n' +
         'All options follow this format:\n' +
-        '- Brief summary of action or dialogue\n\n' +
+        '#. Brief summary of action or dialogue\n\n' +
         'Sample Situation: {{user}} is confronted by a locked door with an inattentive guard nearby.' +
         'Sample Response:\n' +
-        '- "How would you feel about letting me in?".\n' +
-        '- Force the lock.\n' +
-        '- Pick the lock (it looks difficult).\n' +
-        '- Search for another way in.\n' +
-        '- Give up.\n\n' +
-        'The flavor of the options should exercise creativity and diversity while matching the tone or energy of the narrative, but the formatting of these options should remain uniform for processing purposes.';
+        '1. "How would you feel about letting me in?"\n' +
+        '2. Force the lock.\n' +
+        '3. Pick the lock (it looks difficult).\n' +
+        '4. Search for another way in.\n' +
+        '5. Give up and go home.\n\n' +
+        'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, but the formatting of these options should remain uniform for processing purposes.';
 
     characters: {[key: string]: Character};
     users: {[key: string]: User};
