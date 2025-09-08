@@ -16,7 +16,7 @@ creator_notes: |
 
   Updates:
 
-  - 2024-09-08: Some prompt formatting improvements and some response clean-up precautions.
+  - 2024-09-08: Some prompt formatting improvements, response clean-up precautions, and a fix for a loading issue.
 
 # 'PUBLIC', 'PRIVATE', or 'UNLISTED'.
 visibility: 'PUBLIC'

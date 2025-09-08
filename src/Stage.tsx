@@ -65,12 +65,12 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             users,
             messageState,
         } = data;
+        this.choices = [];
         this.setStateFromMessageState(messageState);
         this.users = users;
         this.characters = characters;
         console.log(this.users);
         console.log(this.characters);
-        this.choices = [];
     }
 
     async load(): Promise<Partial<LoadResponse<InitStateType, ChatStateType, MessageStateType>>> {
@@ -99,9 +99,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
         const match = content.match(/^\s*(\d+)/m);
         if (match) {
-            console.log(match);
-            console.log(this.choices.length);
-            choiceIndex = Number(match[1]) - 1;
+            choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
                 console.log(`Picked by index: ${choiceIndex}`);
                 finalContent = this.choices[choiceIndex];
@@ -110,7 +108,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             }
         }
 
-        // Alternatively, they may have repeated some snipped of content from one of the options:
+        // Alternatively, they may have repeated some snippet of content from one of the options:
         for (let i = 0; i < this.choices.length; i++) {
             if (content.trim().toLowerCase().includes(this.choices[i].trim().toLowerCase()) || this.choices[i].trim().toLowerCase().includes(content.trim().toLowerCase())) {
                 console.log(`picked by content match: ${i}`);
@@ -209,7 +207,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     }
 
     buildMessageState(): any {
-        return {'choices': this.choices};
+        return {choices: [...this.choices]};
     }
 
     replaceTags(source: string, replacements: {[name: string]: string}) {
