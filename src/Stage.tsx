@@ -118,7 +118,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         }
 
         return {
-            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action: ${finalContent}. Depict these events—including any of {{user}}'s action or dialogue—as the narrative continues.`,
+            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action:\n\n${finalContent}\n\nDepict {{user}}'s action and/or dialogue as the narrative continues with these events.`,
             messageState: this.buildMessageState(),
             modifiedMessage: choiceIndex ? `(${choiceIndex + 1}. ${finalContent})` : `(Ad-lib Action: ${finalContent})`,
             systemMessage: null,
@@ -136,23 +136,19 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let finalContent = botMessage.content || '';
 
         // Remove any leading number line like "x. Some content here." where x is a number:
-        // Just log these for now so I can decide whether I want to do it:
         const leadingNumberMatch = finalContent.match(/^\s*(\d+)\.\s*(.*)$/gm);
         if (leadingNumberMatch) {
             console.log(`Leading numbers:`);
             console.log(leadingNumberMatch);
-            // Simulate what the final message might look like and log that:
-            let simulated = finalContent;
             for (const match of leadingNumberMatch) {
                 const lineMatch = match.match(/^\s*(\d+)\.\s*(.*)$/gm);
                 console.log(lineMatch);
                 if (lineMatch) {
-                    simulated = simulated.replace(match, '');
+                    finalContent = finalContent.replace(match, '');
                 }
             }
-            console.log(`Simulated final content without leading numbers:`);
-            console.log(simulated);
         }
+        finalContent = finalContent.trim();
 
         // Cut off the content if encountering # or --- or *** or "What do you do?" or "System:"
         const cutoffMatch = finalContent.match(/(---|#|\*\*\*|What do you do\?|System:)/);
