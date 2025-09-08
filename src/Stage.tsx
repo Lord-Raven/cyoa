@@ -100,7 +100,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         const match = content.match(/^\s*(\d+)/m);
         if (match) {
             console.log(match);
-            choiceIndex = parseInt(match[1], 10) - 1;
+            console.log(this.choices.length);
+            choiceIndex = Number(match[1]) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
                 console.log(`Picked by index: ${choiceIndex}`);
                 finalContent = this.choices[choiceIndex];
@@ -199,6 +200,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     }
 
     setStateFromMessageState(messageState: MessageStateType) {
+        console.log('setStateFromMessageState:');
+        console.log(messageState);
         if (messageState != null) {
             this.choices = messageState.choices;
         }
