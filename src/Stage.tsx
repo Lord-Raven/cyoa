@@ -27,16 +27,17 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     readonly defaultStat: number = 0;
     readonly actionPrompt: string = 
         'Critical Instruction:\n' + 
-        'This is a multiple-choice turn-based role-play. Based on the above chat history, output a list of three-to-six options for varied follow-up actions that {{user}} could choose to pursue at this juncture.\n' +
+        'This is a multiple-choice turn-based role-play. Based on the above chat history, output a list of four-to-six options for varied follow-up actions that {{user}} could choose to pursue at this juncture.\n' +
         'These options can be simple dialogue, immediate reactions, or general courses of action. Consider the characters\' current situations, motivations, and assets while crafting interesting actions that could ' +
         'drive the narrative in different directions.\n' +
-        'Ignore past option formatting or structure. All options follow this format:\n' +
+        'All options follow this format:\n' +
         '#. Brief summary of action or dialogue\n\n' +
+        'Ignore the formatting or structure of previously generated options and learn from the brief examples below:\n\n' +
         'Sample Situation: {{user}} is confronted by a locked door with an inattentive guard nearby.' +
         'Sample Response:\n' +
-        '1. "How would you feel about letting me in?"\n' +
+        '1. Approach the guard, "How would you feel about letting me in?"\n' +
         '2. Force the lock.\n' +
-        '3. Pick the lock (it looks difficult).\n' +
+        '3. Pick the lock (it looks complex).\n' +
         '4. Search for another way in.\n' +
         '5. Give up and go home.\n\n' +
         'Sample Situation: {{user}} has just entered a bustling tavern.\n' +
@@ -45,7 +46,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '2. Scan the room for familiar faces.\n' +
         '3. Sit in a corner and observe the patrons.\n' +
         '4. Strike up a conversation with a stranger.\n' +
-        '5. Look for a quiet spot to gather your thoughts.\n\n' +
+        '5. Look for a quiet spot to gather your thoughts.\n' +
+        '6. Strike up a song.\n\n' +
         'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, ' +
         'but the formatting of these options should remain uniform for processing purposes.';
 

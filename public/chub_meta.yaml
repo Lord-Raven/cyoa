@@ -14,6 +14,10 @@ creator_notes: |
   
   There's not much to this one; you can search for it in Chat Settings and drop it into any old chat to forfeit agency or abandon responsibility for your own writing. Have fun!
 
+  Updates:
+
+  - 2024-09-08: Some prompt formatting improvements and some response clean-up precautions.
+
 # 'PUBLIC', 'PRIVATE', or 'UNLISTED'.
 visibility: 'PUBLIC'
 
