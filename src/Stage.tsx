@@ -135,12 +135,22 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
         let finalContent = botMessage.content || '';
 
-        // If content begins with a line that looks like this "x. Some content here." where x is a number, strip off that line:
-        const leadingNumberMatch = finalContent.match(/^\s*(\d+)\.\s*(.*)$/);
+        // Remove any leading number line like "x. Some content here." where x is a number:
+        // Just log these for now so I can decide whether I want to do it:
+        const leadingNumberMatch = finalContent.match(/^\s*(\d+)\.\s*(.*)$/gm);
         if (leadingNumberMatch) {
-            console.log(`Maybe strip the leading number line? Just logging for now.`);
+            console.log(`Leading numbers:`);
             console.log(leadingNumberMatch);
-            console.log(leadingNumberMatch[2].trim());
+            // Simulate what the final message might look like and log that:
+            let simulated = finalContent;
+            for (const match of leadingNumberMatch) {
+                const lineMatch = match.match(/^\s*(\d+)\.\s*(.*)$/gm);
+                if (lineMatch) {
+                    simulated = simulated.replace(match, lineMatch[2].trim());
+                }
+            }
+            console.log(`Simulated final content without leading numbers:`);
+            console.log(simulated);
         }
 
         // Cut off the content if encountering # or --- or *** or "What do you do?" or "System:"
