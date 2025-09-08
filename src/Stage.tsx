@@ -145,7 +145,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             let simulated = finalContent;
             for (const match of leadingNumberMatch) {
                 const lineMatch = match.match(/^\s*(\d+)\.\s*(.*)$/gm);
-                if (lineMatch) {
+                console.log(lineMatch);
+                if (lineMatch && lineMatch[2]) {
                     simulated = simulated.replace(match, lineMatch[2].trim());
                 }
             }
