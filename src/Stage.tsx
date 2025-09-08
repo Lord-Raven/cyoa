@@ -203,7 +203,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         console.log('setStateFromMessageState:');
         console.log(messageState);
         if (messageState != null) {
-            this.choices = messageState.choices;
+            this.choices = [...messageState.choices];
+            console.log(this.choices);
         }
     }
 
