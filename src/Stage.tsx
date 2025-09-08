@@ -139,11 +139,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         // Remove any leading number line like "x. Some content here." where x is a number:
         const leadingNumberMatch = finalContent.match(/^\s*(\d+)\.\s*(.*)$/gm);
         if (leadingNumberMatch) {
-            console.log(`Leading numbers:`);
-            console.log(leadingNumberMatch);
             for (const match of leadingNumberMatch) {
                 const lineMatch = match.match(/^\s*(\d+)\.\s*(.*)$/gm);
-                console.log(lineMatch);
                 if (lineMatch) {
                     finalContent = finalContent.replace(match, '');
                 }
@@ -171,7 +168,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         this.choices = [];
         
         if (optionResponse && optionResponse.result) {
-            console.log(`Option response`);
+            console.log(`Option response:`);
             console.log(optionResponse.result);
             const lines = optionResponse.result.split('\n');
 
@@ -198,11 +195,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     }
 
     setStateFromMessageState(messageState: MessageStateType) {
-        console.log('setStateFromMessageState:');
-        console.log(messageState);
         if (messageState != null) {
             this.choices = [...messageState.choices];
-            console.log(this.choices);
         }
     }
 
