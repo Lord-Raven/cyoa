@@ -26,10 +26,11 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     
     readonly defaultStat: number = 0;
     readonly actionPrompt: string = 
-        'Critical Instruction:\nThis is a multiple-choice turn-based role-play. Based on the above chat history, output a list of three-to-six options for varied follow-up actions that {{user}} could choose to pursue at this juncture.\n' +
+        'Critical Instruction:\n' + 
+        'This is a multiple-choice turn-based role-play. Based on the above chat history, output a list of three-to-six options for varied follow-up actions that {{user}} could choose to pursue at this juncture.\n' +
         'These options can be simple dialogue, immediate reactions, or general courses of action. Consider the characters\' current situations, motivations, and assets while crafting interesting actions that could ' +
         'drive the narrative in different directions.\n' +
-        'All options follow this format:\n' +
+        'Ignore past option formatting or structure. All options follow this format:\n' +
         '#. Brief summary of action or dialogue\n\n' +
         'Sample Situation: {{user}} is confronted by a locked door with an inattentive guard nearby.' +
         'Sample Response:\n' +
@@ -38,7 +39,15 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '3. Pick the lock (it looks difficult).\n' +
         '4. Search for another way in.\n' +
         '5. Give up and go home.\n\n' +
-        'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, but the formatting of these options should remain uniform for processing purposes.';
+        'Sample Situation: {{user}} has just entered a bustling tavern.\n' +
+        'Sample Response:\n' +
+        '1. Approach the bar and order a drink.\n' +
+        '2. Scan the room for familiar faces.\n' +
+        '3. Sit in a corner and observe the patrons.\n' +
+        '4. Strike up a conversation with a stranger.\n' +
+        '5. Look for a quiet spot to gather your thoughts.\n\n' +
+        'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, ' +
+        'but the formatting of these options should remain uniform for processing purposes.';
 
     characters: {[key: string]: Character};
     users: {[key: string]: User};
@@ -109,9 +118,9 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         }
 
         return {
-            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action: ${finalContent}. Depict {{user}}'s actions, including any dialogue and consequences as the narrative continues.`,
+            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action: ${finalContent}. Depict these events—including any of {{user}}'s action or dialogue—as the narrative continues.`,
             messageState: this.buildMessageState(),
-            modifiedMessage: choiceIndex ? `(${choiceIndex + 1}. ${finalContent})` : finalContent,
+            modifiedMessage: choiceIndex ? `(${choiceIndex + 1}. ${finalContent})` : `(Ad-lib Action: ${finalContent})`,
             systemMessage: null,
             error: errorMessage,
             chatState: null,
@@ -126,8 +135,16 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
         let finalContent = botMessage.content || '';
 
-        // Cut off the content if encountering # or --- or "What do you do?"
-        const cutoffMatch = finalContent.match(/(---|#|What do you do\?)/);
+        // If content begins with a line that looks like this "x. Some content here." where x is a number, strip off that line:
+        const leadingNumberMatch = finalContent.match(/^\s*(\d+)\.\s*(.*)$/);
+        if (leadingNumberMatch) {
+            console.log(`Maybe strip the leading number line? Just logging for now.`);
+            console.log(leadingNumberMatch);
+            console.log(leadingNumberMatch[2].trim());
+        }
+
+        // Cut off the content if encountering # or --- or *** or "What do you do?" or "System:"
+        const cutoffMatch = finalContent.match(/(---|#|\*\*\*|What do you do\?|System:)/);
         if (cutoffMatch) {
             finalContent = finalContent.substring(0, cutoffMatch.index).trim();
         }
