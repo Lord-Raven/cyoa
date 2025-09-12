@@ -14,7 +14,7 @@ type ChatStateType = any;
     Choke Your Own Adulterer. 
     Cheese Your Own Advantage. 
     Charter Your Own Airship. 
-    Chug Your Own Ale. 
+    Chug Your Own Antidote. 
     Chase Your Own Antelope. 
     Charge Your Own Android. 
     Chant Your Own Anthem. 
@@ -119,9 +119,9 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         }
 
         return {
-            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action:\n\n${finalContent}\n\nDepict {{user}}'s action and/or dialogue as the narrative continues with these events.`,
+            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action:\n\n${finalContent}\n\nDepict {{user}}'s action and/or dialogue as the narrative continues with these events. Focus on the narrative and do not list new options, as these are independently generated.`,
             messageState: this.buildMessageState(),
-            modifiedMessage: choiceIndex ? `(${choiceIndex + 1}. ${finalContent})` : `(Ad-lib Action: ${finalContent})`,
+            modifiedMessage: choiceIndex !== null ? `(${choiceIndex + 1}. ${finalContent})` : `(Ad-lib Action: ${finalContent})`,
             systemMessage: null,
             error: errorMessage,
             chatState: null,

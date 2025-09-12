@@ -12,11 +12,13 @@ creator_notes: |
   
   After each response, the stage generates some options for you, and you can enter a number to choose one or ignore them entirely. Either way, the LLM is instructed to narrate the details and outcome of your choice. 
   
-  There's not much to this one; you can search for it in Chat Settings and drop it into any old chat to forfeit agency or abandon responsibility for your own writing. Have fun!
-
-  Updates:
-
-  - 2024-09-08: Some prompt formatting improvements, response clean-up precautions, and a fix for a loading issue.
+  There's not much to this one; you can search for it in Chat Settings and drop it into any old chat to forfeit agency or abandon responsibility for your own writing. Have fun! 
+  
+  Updates: 
+  
+  - 2024-09-12: Minor fixes and prompt tweaks. 
+  
+  - 2024-09-08: Some prompt formatting improvements, response clean-up precautions, and a fix for a loading issue. 
 
 # 'PUBLIC', 'PRIVATE', or 'UNLISTED'.
 visibility: 'PUBLIC'
