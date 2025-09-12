@@ -39,7 +39,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '2. Force the lock.\n' +
         '3. Pick the lock (it looks complex).\n' +
         '4. Search for another way in.\n' +
-        '5. Give up and go home.\n\n' +
+        '5. Give up and go home.\n' +
+        '###\n\n' +
         'Sample Situation: {{user}} has just entered a bustling tavern.\n' +
         'Sample Response:\n' +
         '1. Approach the bar and order a drink.\n' +
@@ -47,7 +48,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '3. Sit in a corner and observe the patrons.\n' +
         '4. Strike up a conversation with a stranger.\n' +
         '5. Look for a quiet spot to gather your thoughts.\n' +
-        '6. Strike up a song.\n\n' +
+        '6. Strike up a song.\n' +
+        '###\n\n' +
         'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, ' +
         'but the formatting of these options should remain uniform for processing purposes.';
 
@@ -156,13 +158,15 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
         const targetUser = (promptForId ? this.users[promptForId] : Object.values(this.users)[0]);
         // Generate options:
-        let optionPrompt = this.replaceTags(`Details about {{char}}:\n${this.characters[anonymizedId].personality}\n${this.characters[anonymizedId].description}\n\nDetails about {{user}}:\n${targetUser.chatProfile}\n\nChat History:\n{{messages}}\n\nDefault Instruction:\n{{post_history_instructions}}\n\n${this.actionPrompt}`,
+        let optionPrompt = this.replaceTags(`Details about {{char}}:\n${this.characters[anonymizedId].personality}\n${this.characters[anonymizedId].description}\n\nDetails about {{user}}:\n${targetUser.chatProfile}\n\n` +
+                `Chat History:\n{{messages}}\n\nDefault Instruction:\n{{post_history_instructions}}\n\n${this.actionPrompt}`,
             {"user": targetUser.name, "char": this.characters[anonymizedId].name, "original": ''});
         let optionResponse = await this.generator.textGen({
             prompt: optionPrompt,
             min_tokens: 20,
-            max_tokens: 150,
-            include_history: true
+            max_tokens: 200,
+            include_history: true,
+            stop: ["###"]
         });
 
         this.choices = [];
@@ -170,13 +174,31 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         if (optionResponse && optionResponse.result) {
             console.log(`Option response:`);
             console.log(optionResponse.result);
-            const lines = optionResponse.result.split('\n');
 
+            // Experimental parsing; just outputting for testing first:
+            const normalized = optionResponse.result
+                .replace(/\r\n|\r|\n/g, ' ') // collapse line breaks
+                .replace(/\s{2,}/g, ' ') // collapse multiple spaces
+                .replace(/(\d+)\.\s*/g, '\n$1. ') // put each numbered item on its own line
+                .replace(/-\s*/g, '\n- ') // put each dash item on its own line
+                .trim();
+            console.log(`Testing normalized option response:`);
+            console.log(normalized);
+
+
+
+
+
+            // Actual current parsing:
+            const lines = optionResponse.result.split('\n');
             for (const line of lines) {
                 const trimmed = line.trim();
                 if (trimmed.startsWith('-') || /^\d+\./.test(trimmed)) {
                     // Strip off any "-" or "#.":
-                    this.choices.push(trimmed.replace(/^[\-\d]+\.\s*/, ''));
+                    const choice = trimmed.replace(/^[\-\d]+\.\s*/, '').trim();
+                    if (choice.length > 0 && !this.choices.includes(choice)) {
+                        this.choices.push(choice);
+                    }
                 }
             }
         }
