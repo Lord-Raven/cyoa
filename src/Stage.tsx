@@ -180,7 +180,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
                 .replace(/\r\n|\r|\n/g, ' ') // collapse line breaks
                 .replace(/\s{2,}/g, ' ') // collapse multiple spaces
                 .replace(/(\d+)\.\s*/g, '\n$1. ') // put each numbered item on its own line
-                .replace(/-\s*/g, '\n- ') // put each dash item on its own line
+                .replace(/-\s+/g, '\n- ') // put each dash item on its own line
                 .trim();
             console.log(`Testing normalized option response:`);
             console.log(normalized);
