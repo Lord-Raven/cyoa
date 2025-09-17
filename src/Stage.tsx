@@ -50,9 +50,9 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '5. Look for a quiet spot to gather your thoughts.\n' +
         '6. Strike up a song.\n' +
         '###\n\n' +
-        'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, ' +
-        'but the formatting of these options should remain uniform for processing purposes. ' +
-        'Favor new and interesting courses of action over recycling past unselected options.';
+        'The options should be brief but flavorful, exercising creativity and diversity while matching the tone and energy of the narrative, ' +
+        'but the numbered formatting of these options should remain consistent for processing purposes. ' +
+        'Favor new and interesting courses of action over recycling past options.';
 
     characters: {[key: string]: Character};
     users: {[key: string]: User};
