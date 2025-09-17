@@ -51,7 +51,8 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         '6. Strike up a song.\n' +
         '###\n\n' +
         'The options should be brief but flavorful, exercising creativity and diversity while matching the tone or energy of the narrative, ' +
-        'but the formatting of these options should remain uniform for processing purposes.';
+        'but the formatting of these options should remain uniform for processing purposes. ' +
+        'Favor new and interesting courses of action over recycling past unselected options.';
 
     characters: {[key: string]: Character};
     users: {[key: string]: User};
@@ -182,15 +183,13 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
                 .replace(/(\d+)\.\s*/g, '\n$1. ') // put each numbered item on its own line
                 .replace(/-\s+/g, '\n- ') // put each dash item on its own line
                 .trim();
-            console.log(`Testing normalized option response:`);
+            console.log(`Normalized option response:`);
             console.log(normalized);
 
 
 
-
-
             // Actual current parsing:
-            const lines = optionResponse.result.split('\n');
+            const lines = normalized.split('\n');
             for (const line of lines) {
                 const trimmed = line.trim();
                 if (trimmed.startsWith('-') || /^\d+\./.test(trimmed)) {
