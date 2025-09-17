@@ -176,7 +176,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             console.log(`Option response:`);
             console.log(optionResponse.result);
 
-            // Experimental parsing; just outputting for testing first:
+            // Repair some basic formatting before parsing:
             const normalized = optionResponse.result
                 .replace(/\r\n|\r|\n/g, ' ') // collapse line breaks
                 .replace(/\s{2,}/g, ' ') // collapse multiple spaces
@@ -188,14 +188,20 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
 
 
-            // Actual current parsing:
+            // Parse response into options:
             const lines = normalized.split('\n');
             for (const line of lines) {
                 const trimmed = line.trim();
                 if (trimmed.startsWith('-') || /^\d+\./.test(trimmed)) {
                     // Strip off any "-" or "#.":
                     const choice = trimmed.replace(/^[\-\d]+\.\s*/, '').trim();
-                    if (choice.length > 0 && !this.choices.includes(choice)) {
+
+                    if (/[A-Za-z]/.test(choice) && // Need at least one letter
+                            !/What do you do/i.test(choice) &&  // Don't include the prompt text
+                            !/System:/i.test(choice) && // Don't include system messages
+                            choice.length > 0 && // Not empty
+                            choice.length < 200 && // Not too long
+                            !this.choices.includes(choice)) {
                         this.choices.push(choice);
                     }
                 }
