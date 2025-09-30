@@ -99,6 +99,19 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let choiceIndex: number|null = null;
         let finalContent: string|undefined = content;
 
+        // It is possible that the content we care about is embedded within a series of HTML tags. We will eventually want to put the modified finalContent back into the same tags, so we need to save the wrapping tags:
+        const htmlMatch = content.match(/^(.*?)(<[^>]+>.*<\/[^>]+>)(.*)$/s);
+        let leading = '';
+        let trailing = '';
+        let tempContent = '';
+        if (htmlMatch) {
+            leading = htmlMatch[1];
+            tempContent = htmlMatch[2]; // Swap to finalContent when ready.
+            trailing = htmlMatch[3];
+            console.log(`Just testing these values for now: ${leading} -- ${tempContent} -- ${trailing}`);
+        }
+
+
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
         const match = content.match(/^\s*(\d+)/m);
         if (match) {
