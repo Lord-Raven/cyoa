@@ -99,16 +99,34 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let choiceIndex: number|null = null;
         let finalContent: string|undefined = content;
 
-        // It is possible that the content we care about is embedded within a series of HTML tags. We will eventually want to put the modified finalContent back into the same tags, so we need to save the wrapping tags:
-        const htmlMatch = content.match(/^(.*?)(<[^>]+>.*<\/[^>]+>)(.*)$/s);
+        // It is possible that the content we care about is embedded within a series of HTML tags (e.g., "<someTag><anotherTag>text we care about</anotherTag><someOtherTag/></someTag>").
+        // Capture all <> or and </> tags as well as text in between as separate groups, then loop through the matches to find the first result not in a tag; save that to tempContent (for modification),
+        // while building leading and trailing from the other tag matches. This way we can eventually put the modified content back into the same tags.
+        // For instance, in the above example, we want to end up with leading = "<someTag><anotherTag>", tempContent = "text we care about", trailing = "</anotherTag><someOtherTag/></someTag>".
+        const contentRegex = /(<[^>]+>)+([^<]+)(<[^>]+>|([^<]+))+/gm;
+        const htmlMatch = content.match(contentRegex);
+        // We will eventually want to put the modified finalContent back into the same tags, so we need to save the wrapping tags:
         let leading = '';
         let trailing = '';
         let tempContent = '';
         if (htmlMatch) {
-            leading = htmlMatch[1];
-            tempContent = htmlMatch[2]; // Swap to finalContent when ready.
-            trailing = htmlMatch[3];
-            console.log(`Just testing these values for now: ${leading} -- ${tempContent} -- ${trailing}`);
+            // loop through matches to find the first result not in a tag (building up leading as we go):
+            for (const match of htmlMatch) {
+                // Check if match is a tag:
+                if (tempContent === '' && !match.startsWith('<')) {
+                    tempContent = match;
+                } else {
+                    if (tempContent === '') {
+                        leading += match;
+                    } else {
+                        trailing += match;
+                    }
+                }
+            }
+            console.log(`Just testing these values for now:`);
+            console.log(leading);
+            console.log(tempContent);
+            console.log(trailing);
         }
 
 
