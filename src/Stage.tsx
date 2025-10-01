@@ -255,32 +255,31 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let after = '';
         let found = false;
 
-        function traverse(node: Node): boolean {
-            for (let child of node.childNodes) {
-            if (child.nodeType === Node.TEXT_NODE) {
+        for (let child of doc.body.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE && !found) {
                 const text = child.textContent?.trim();
                 if (text) {
-                foundText = text;
-                found = true;
-                return true;
+                    foundText = text;
+                    found = true;
                 }
-            } else if (child.nodeType === Node.ELEMENT_NODE) {
-                if (traverse(child)) return true;
+            } else if (!found) {
+                // Add full string of node to before:
+                if (child.nodeType === Node.ELEMENT_NODE && (child as Element).outerHTML) {
+                    before += (child as Element).outerHTML;
+                } else {
+                    before += '';
+                }
+            } else {
+                // Add full string of node to after:
+                if (child.nodeType === Node.ELEMENT_NODE && (child as Element).outerHTML) {
+                    after += (child as Element).outerHTML;
+                } else {
+                    after += '';
+                }
             }
-            }
-            return false;
         }
 
-        traverse(doc.body);
-
-        if (foundText) {
-            const fullHTML = doc.body.innerHTML;
-            const index = fullHTML.indexOf(foundText);
-            before = fullHTML.slice(0, index);
-            after = fullHTML.slice(index + foundText.length);
-        }
-
-        return { before, text: foundText, after };
+        return { before: before, text: foundText, after: after };
     }
 
     render(): ReactElement {
