@@ -97,7 +97,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
         let errorMessage: string|null = null;
         let choiceIndex: number|null = null;
-        let finalContent: string|undefined = content;
+        let realContent: string|undefined = content;
 
         // It is possible that the content we care about is embedded within a series of HTML tags (e.g., "<someTag><anotherTag>text we care about</anotherTag><someOtherTag/></someTag>").
         // We want to extract the text we care about and be able to modify and put it back into the HTML around it.
@@ -106,6 +106,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         console.log(result.before);
         console.log(result.text);
         console.log(result.after);
+        realContent = result.text;
 
 
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
@@ -114,7 +115,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
                 console.log(`Picked by index: ${choiceIndex}`);
-                finalContent = this.choices[choiceIndex];
+                realContent = this.choices[choiceIndex];
             } else {
                 choiceIndex = null;
             }
@@ -125,15 +126,17 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             if (content.trim().toLowerCase().includes(this.choices[i].trim().toLowerCase()) || this.choices[i].trim().toLowerCase().includes(content.trim().toLowerCase())) {
                 console.log(`picked by content match: ${i}`);
                 choiceIndex = i;
-                finalContent = this.choices[i];
+                realContent = this.choices[i];
                 break;
             }
         }
 
+        const modifiedMessage = result.before + (choiceIndex !== null ? `(${choiceIndex + 1}. ${realContent})` : `(Ad-lib Action: ${realContent})`) + result.after;
+
         return {
-            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action:\n\n${finalContent}\n\nDepict {{user}}'s action and/or dialogue as the narrative continues with these events. Focus on the narrative and do not list new options, as these are independently generated.`,
+            stageDirections: `Critical Instruction: {{user}} will pursue the following course of action:\n\n${realContent}\n\nDepict {{user}}'s action and/or dialogue as the narrative continues with these events. Focus on the narrative and do not list new options, as these are independently generated.`,
             messageState: this.buildMessageState(),
-            modifiedMessage: choiceIndex !== null ? `(${choiceIndex + 1}. ${finalContent})` : `(Ad-lib Action: ${finalContent})`,
+            modifiedMessage: modifiedMessage,
             systemMessage: null,
             error: errorMessage,
             chatState: null,
