@@ -12,12 +12,10 @@ creator_notes: |
   
   After each response, the stage generates some options for you, and you can enter a number to choose one or ignore them entirely. Either way, the LLM is instructed to narrate the details and outcome of your choice.  
   
-  Search for it in Chat Settings and drop it into any old chat to forfeit agency or abandon responsibility for your own writing. 
-  This stage can now be used alongside [Crunchatize](https://chub.ai/extensions/Ravenok/crunchatize-77a78ffcc6a6) or [Cruncatize Zero](https://chub.ai/extensions/Ravenok/crunchatize-zero-55cf8960d31a) to add dice rolls 
-  to your outcomes!  
+  Search for it in Chat Settings and drop it into any old chat to forfeit agency or abandon responsibility for your own writing. This stage can now be used alongside [Crunchatize](https://chub.ai/extensions/Ravenok/crunchatize-77a78ffcc6a6) or [Cruncatize Zero](https://chub.ai/extensions/Ravenok/crunchatize-zero-55cf8960d31a) to add dice rolls to your outcomes!  
   
   Updates: 
-  - 2025-09-30: Making changes to allow this stage to play nicely with Crunchatize. 
+  - 2025-09-30: Made changes to allow this stage to play nicely with Crunchatize. 
   
   - 2025-09-16: Improved option parsing. Prompt tweaks to avoid samey options. 
   
