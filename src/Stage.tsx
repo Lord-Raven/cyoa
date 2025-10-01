@@ -247,35 +247,47 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
     }
 
     extractFirstTextNode(html: string): {before: string, text: string, after: string} {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-
-        let foundText = '';
+        // Create a DOM parser to extract the first text node that exists outside of any HTML tags.
+        // Everything before the text node should be added to "before", everything after added to "after".
         let before = '';
+        let foundText = '';
         let after = '';
-        let found = false;
 
-        for (let child of doc.body.childNodes) {
-            if (child.nodeType === Node.TEXT_NODE && !found) {
-                const text = child.textContent?.trim();
-                if (text) {
-                    foundText = text;
-                    found = true;
-                }
-            } else if (!found) {
-                // Add full string of node to before:
-                if (child.nodeType === Node.ELEMENT_NODE && (child as Element).outerHTML) {
-                    before += (child as Element).outerHTML;
+        let tagDepth = 0;
+        for (let i = 0; i < html.length; i++) {
+            const char = html[i];
+            if (char === '<') {
+                tagDepth++;
+                if (foundText === '') {
+                    before += char;
                 } else {
-                    before += '';
+                    after = html.substring(i);
+                    break;
                 }
+            } else if (char === '>') {
+                if (tagDepth > 0) {
+                    tagDepth--;
+                }
+                if (foundText === '') {
+                    before += char;
+                }
+            } else if (tagDepth === 0) {
+                // We are outside of any tags.
+                if (foundText === '' && /\S/.test(char)) {
+                    // Found the start of the first text node.
+                    foundText += char;
+                } else if (foundText !== '') {
+                    // We are inside the first text node.
+                    foundText += char;
+                } else {
+                    // Still before the first text node.
+                    before += char;
+                }
+            } else if (foundText === '') {
+                before += char;
             } else {
-                // Add full string of node to after:
-                if (child.nodeType === Node.ELEMENT_NODE && (child as Element).outerHTML) {
-                    after += (child as Element).outerHTML;
-                } else {
-                    after += '';
-                }
+                after = html.substring(i);
+                break;
             }
         }
 
