@@ -110,7 +110,7 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
 
 
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
-        const match = content.match(/^\s*(\d+)/m);
+        const match = realContent.match(/^\s*(\d+)/m);
         if (match) {
             choiceIndex = parseInt(match[1], 10) - 1;
             if (choiceIndex >= 0 && choiceIndex < this.choices.length) {
@@ -121,13 +121,15 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
             }
         }
 
-        // Alternatively, they may have repeated some snippet of content from one of the options:
-        for (let i = 0; i < this.choices.length; i++) {
-            if (content.trim().toLowerCase().includes(this.choices[i].trim().toLowerCase()) || this.choices[i].trim().toLowerCase().includes(content.trim().toLowerCase())) {
-                console.log(`picked by content match: ${i}`);
-                choiceIndex = i;
-                realContent = this.choices[i];
-                break;
+        if (choiceIndex === null) {
+            // Alternatively, they may have repeated some snippet of content from one of the options:
+            for (let i = 0; i < this.choices.length; i++) {
+                if (realContent.trim().toLowerCase().includes(this.choices[i].trim().toLowerCase()) || this.choices[i].trim().toLowerCase().includes(realContent.trim().toLowerCase())) {
+                    console.log(`picked by content match: ${i}`);
+                    choiceIndex = i;
+                    realContent = this.choices[i];
+                    break;
+                }
             }
         }
 
