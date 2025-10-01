@@ -100,34 +100,12 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         let finalContent: string|undefined = content;
 
         // It is possible that the content we care about is embedded within a series of HTML tags (e.g., "<someTag><anotherTag>text we care about</anotherTag><someOtherTag/></someTag>").
-        // Capture all <> or and </> tags as well as text in between as separate groups, then loop through the matches to find the first result not in a tag; save that to tempContent (for modification),
-        // while building leading and trailing from the other tag matches. This way we can eventually put the modified content back into the same tags.
-        // For instance, in the above example, we want to end up with leading = "<someTag><anotherTag>", tempContent = "text we care about", trailing = "</anotherTag><someOtherTag/></someTag>".
-        const contentRegex = /(<[^>]+>)+([^<]+)(<[^>]+>|([^<]+))+/gm;
-        const htmlMatch = content.match(contentRegex);
-        // We will eventually want to put the modified finalContent back into the same tags, so we need to save the wrapping tags:
-        let leading = '';
-        let trailing = '';
-        let tempContent = '';
-        if (htmlMatch) {
-            // loop through matches to find the first result not in a tag (building up leading as we go):
-            for (const match of htmlMatch) {
-                // Check if match is a tag:
-                if (tempContent === '' && !match.startsWith('<')) {
-                    tempContent = match;
-                } else {
-                    if (tempContent === '') {
-                        leading += match;
-                    } else {
-                        trailing += match;
-                    }
-                }
-            }
-            console.log(`Just testing these values for now:`);
-            console.log(leading);
-            console.log(tempContent);
-            console.log(trailing);
-        }
+        // We want to extract the text we care about and be able to modify and put it back into the HTML around it.
+        const result = this.extractFirstTextNode(content);
+        console.log(`Extracted text node:`);
+        console.log(result.before);
+        console.log(result.text);
+        console.log(result.after);
 
 
         // The user was presented a set of numbered action options. Their message content may simply have a number corresponding to one of those options. Or it might have "#." Need to account for a decimal point:
@@ -266,6 +244,43 @@ export class Stage extends StageBase<InitStateType, ChatStateType, MessageStateT
         return source.replace(/{{([A-z]*)}}/g, (match) => {
             return replacements[match.substring(2, match.length - 2)] || match;
         });
+    }
+
+    extractFirstTextNode(html: string): {before: string, text: string, after: string} {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        let foundText = '';
+        let before = '';
+        let after = '';
+        let found = false;
+
+        function traverse(node: Node): boolean {
+            for (let child of node.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                const text = child.textContent?.trim();
+                if (text) {
+                foundText = text;
+                found = true;
+                return true;
+                }
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                if (traverse(child)) return true;
+            }
+            }
+            return false;
+        }
+
+        traverse(doc.body);
+
+        if (foundText) {
+            const fullHTML = doc.body.innerHTML;
+            const index = fullHTML.indexOf(foundText);
+            before = fullHTML.slice(0, index);
+            after = fullHTML.slice(index + foundText.length);
+        }
+
+        return { before, text: foundText, after };
     }
 
     render(): ReactElement {
